@@ -352,7 +352,14 @@ public class Scratch.Widgets.DocumentView : Granite.Widgets.DynamicNotebook {
         // when we are modifying Gtk widgets shared by two threads.
         Idle.add (() => {
             remove_tab (doc);
-            other_window.document_view.insert_tab (doc, -1);
+            GLib.List<Granite.Widgets.Tab> remove_flag = new GLib.List<Granite.Widgets.Tab> ();;
+            foreach (var t in other_window.document_view.tabs) {
+                if (!(t as Services.Document).file.equal(doc.file)) remove_flag.append (t);
+            }
+
+            foreach (var remove in remove_flag ) {
+                other_window.document_view.remove_tab (remove);
+            }
 
             return false;
         });
